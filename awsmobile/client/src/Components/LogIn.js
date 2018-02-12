@@ -271,8 +271,3 @@ const LogInStack = (StackNavigator({
 }, { mode: 'modal' }));
 
 export default props => <LogInStack screenProps={{ ...props }} />;
-
-
-// if (this.state.cognitoUser.signInUserSession.idToken) {
-//   this.onLogIn(this.state.cognitoUser.signInUserSession.idToken);
-// }

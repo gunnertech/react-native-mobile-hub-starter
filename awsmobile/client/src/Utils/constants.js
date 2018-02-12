@@ -11,5 +11,5 @@
  * and limitations under the License.
  */
 export default {
-  APP_NAME: 'Shudi',
+  APP_NAME: 'Gunner Technology Starter',
 };

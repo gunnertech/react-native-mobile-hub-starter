@@ -1,4 +1,4 @@
-# Shudi
+# Gunner Technology React Native MobileHub Starter
 
 
 [Based on](https://github.com/awslabs/aws-mobile-react-native-starter)

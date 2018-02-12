@@ -27,6 +27,7 @@ const FirstScreen = TabNavigator({
           { ...screenProps }
           { ...otherProps }
           onLogIn={(payload) => {
+            console.log("GO TO PRIVACY!!!")
             ///TODO: This isn't right. You're navigating to a screen that requires the user before you've set the user.
             screenProps.rootNavigator.navigate('PrivacyPolicy');
             screenProps.signInUser(payload);

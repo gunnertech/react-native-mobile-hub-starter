@@ -27,7 +27,7 @@ class PrivacyPolicy extends Component {
       <Container>
         <Toolbar
           leftElement="menu"
-          centerElement="Shudi - Privacy Policy"
+          centerElement="App - Privacy Policy"
           onLeftElementPress={() => this.props.rootNavigator.navigate('DrawerOpen')}
         />
         <View><Text>Hello, Privacy</Text></View>

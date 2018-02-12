@@ -11,31 +11,31 @@ features:
           sdk-generation-stage-name: Development
         paths:
           /users: !com.amazonaws.mobilehub.v0.Function 
-            codeFilename: uploads/users-20180209035241.zip
+            codeFilename: uploads/users-20180211212730.zip
             description: 'Handler for calls to resource path : /users/{proxy+}'
             enableCORS: true
             environment: {}
             handler: lambda.handler
-            hashcode: wGZ67hMtQ1FGrW27xX40re0ZQaLPMC7/HXd02GYNKEQ=
+            hashcode: RQAmT1bcesh0OACU24MAOk6COTweqRVKsqq8Mh4mOuc=
             memorySize: '128'
-            modified: '2018-02-09T08:54:08.272+0000'
+            modified: '2018-02-12T02:28:39.882+0000'
             name: users
             runtime: nodejs6.10
             timeout: '3'
-            version: x3yRxnGOWycy.cQEM9g0bQfkyXkrZ5mL
+            version: EuzYTQMvuqpUIkkzAso5onBWJUFm8Jst
           '/users/{proxy+}': !com.amazonaws.mobilehub.v0.Function 
-            codeFilename: uploads/users-20180209035241.zip
+            codeFilename: uploads/users-20180211212730.zip
             description: 'Handler for calls to resource path : /users/{proxy+}'
             enableCORS: true
             environment: {}
             handler: lambda.handler
-            hashcode: wGZ67hMtQ1FGrW27xX40re0ZQaLPMC7/HXd02GYNKEQ=
+            hashcode: RQAmT1bcesh0OACU24MAOk6COTweqRVKsqq8Mh4mOuc=
             memorySize: '128'
-            modified: '2018-02-09T08:54:08.272+0000'
+            modified: '2018-02-12T02:28:39.882+0000'
             name: users
             runtime: nodejs6.10
             timeout: '3'
-            version: 2jgiuXnwGXLN2T6SkGEBFB3axZCE6GkO
+            version: zTYdXcw7JudsdlaEfXr4LVj5r6pQq3is
   content-delivery: !com.amazonaws.mobilehub.v0.ContentDelivery 
     attributes:
       enabled: true
@@ -90,5 +90,5 @@ features:
   user-profiles: !com.amazonaws.mobilehub.v0.UserSettings 
     attributes:
       enabled: true
-name: gunner-react-native-starter
+name: client-2018-02-11-20-09-09
 region: us-east-1

@@ -36,7 +36,7 @@ import Amplify from 'aws-amplify-react-native';
 import awsmobile from './src/aws-exports';
 import First from './src/Screens/First';
 import Splash from './src/Screens/Splash';
-import { PrivacyPolicy as Home } from './src/Screens/PrivacyPolicy';
+import PrivacyPolicy from './src/Screens/PrivacyPolicy';
 import SignOut from './src/Components/SignOut';
 import ForgotPassword from './src/Components/ForgotPassword';
 import DrawerNavHeader from './src/Components/DrawerNavHeader';
@@ -82,15 +82,15 @@ const customComponent = (props) => {
 }
 
 const App = DrawerNavigator({
-  Home: {
-    screen: props => <Home rootNavigator={props.navigation} {...props.screenProps } />,
+  PrivacyPolicy: {
+    screen: props => <PrivacyPolicy rootNavigator={props.navigation} {...props.screenProps } />,
     navigationOptions: {
       drawerLabel: 'Privacy Policy',
     },
   },
   ForgotPassword: {
     screen: (props) => {
-      return <ForgotPassword {...props.screenProps} onCancel={() => props.navigation.navigate('Home')} onSuccess={() => props.navigation.navigate('Home')} />
+      return <ForgotPassword {...props.screenProps} onCancel={() => props.navigation.navigate('PrivacyPolicy')} onSuccess={() => props.navigation.navigate('PrivacyPolicy')} />
     }, navigationOptions: { drawerLabel: 'Change password' }
   },
   SignOut: {
