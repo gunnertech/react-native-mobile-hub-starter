@@ -1,0 +1,142 @@
+/*
+ * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
+ * the License. A copy of the License is located at
+ *
+ *     http://aws.amazon.com/apache2.0/
+ *
+ * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
+ * and limitations under the License.
+ */
+import React from 'react';
+
+import LocalStorage from '../../LocalStorage';
+import { Auth } from 'aws-amplify';
+import { connect } from 'react-redux';
+import signInUser from '../../../../src/actions/signInUser';
+import {View,Text} from 'react-native';
+
+
+
+/**
+ * @param {React.Component} WrappedComponent 
+ * @returns {React.Component}
+ */
+
+const mapStateToProps = (state, ownProps) => ({
+  currentUser: state.users.current
+});
+
+const Authenticator = props => {
+  const WrappedWithAuth = connect(
+    mapStateToProps,
+    { signInUser }
+  )(WithAuth);
+  return(
+    <WrappedWithAuth>
+      {props.children}
+    </WrappedWithAuth>
+  )
+}
+
+class WithAuth extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      ready: false,
+      session: null,
+    };
+
+    this.handleOnSignIn = this.handleOnSignIn.bind(this);
+    this.handleOnSignUp = this.handleOnSignUp.bind(this);
+    this.handleOnSignOut = this.handleOnSignOut.bind(this);
+  }
+
+  componentWillReceiveProps(newProps) {
+    if(newProps.currentUser) {
+      this.setState({
+        ready: true,
+      });
+    }
+  }
+
+  async componentDidMount() {
+    // await LocalStorage.init();
+    let session;
+    try {
+      session = await Auth.currentSession();
+      
+    } catch (err) {
+      console.log(err);
+      session = null;
+    }
+
+    if(session) {
+      this.setState({ session });
+      this.props.signInUser(session);
+    } else {
+      this.setState({
+        session,
+        ready: true,
+      });
+    }
+  }
+
+  handleOnSignIn(session) {
+    this.setState({ session });
+  }
+
+  handleOnSignUp() { }
+
+  handleOnSignOut() {
+    Auth.signOut();
+    this.setState({ session: null });
+  }
+
+  renderChildren() {
+    return React.Children.map(this.props.children, child => {
+      if (child.type === Child) {
+        return React.cloneElement(child, {
+          data: this.props.data
+        })
+      } else {
+        return child
+      }
+    });
+  }
+
+  render() {
+    // return({...this.props.children})
+    const { ready, session } = this.state;
+    console.log('Rendering HOC', ready, !!session);
+    const {
+      onSignIn,
+      onSignUp,
+      doSignOut,
+      children,
+      ...otherProps
+    } = this.props;
+
+    const childrenWithProps = React.Children.map(children, child =>
+      React.cloneElement(child, { 
+        session, 
+        onSignIn: (onSignIn || this.handleOnSignIn),
+        onSignUp: (onSignUp || this.handleOnSignUp),
+        doSignOut: (doSignOut || this.handleOnSignOut),
+        auth: Auth,
+        ...otherProps
+       }));
+
+    return (
+      ready ? {...childrenWithProps[0]} : <View />
+    );
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  { signInUser }
+)(WithAuth);

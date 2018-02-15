@@ -1,18 +1,7 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
 global.Buffer = global.Buffer || require('buffer').Buffer; // Required for aws sigv4 signing
 
 import React from 'react';
+import {View,Text,StatusBar} from 'react-native';
 
 import 'react-native-polyfill';
 
@@ -32,7 +21,7 @@ import {
 } from 'react-native-material-ui';
 
 import { WithAuth } from './lib/Categories/Auth/Components';
-import Amplify from 'aws-amplify-react-native';
+import Amplify from 'aws-amplify';
 import awsmobile from './src/aws-exports';
 import First from './src/Screens/First';
 import Splash from './src/Screens/Splash';
@@ -61,36 +50,54 @@ const uiTheme = {
 
 
 
+class customComponent extends React.Component {
+// const customComponent = (props) => {
+  constructor(props, context) {
+    super(props, context);
 
-const mapNavItem = (props, item) => (
-  Object.assign(({
-    "ForgotPassword": { icon: 'lock-open', value: 'Forgot Password', active: true },
-    "PrivacyPolicy": { icon: 'security', value: 'Privacy Policy' },
-    "SignOut": { icon: 'exit-to-app', value: 'Sign Out' },
-  }[item.key] || {}), {onPress: () => props.navigation.navigate(item.key)})
-)
+    this.state = {
+      active: 'Home'
+    }
+  }
 
-const customComponent = (props) => {
-  return (
-  <Drawer>
-    <DrawerNavHeader />
-    <Drawer.Section
-        items={props.items.map(item => mapNavItem(props, item)).filter(item => !!item.value)}
-    />
-  </Drawer>
-  );
+  mapNavItem(item) {
+    return (
+      Object.assign(({
+        "Home": {
+          icon: 'home',
+          value: 'Old Stuff'
+        },
+        "ForgotPassword": { icon: 'lock-open', value: 'Forgot Password' },
+        "PrivacyPolicy": { icon: 'security', value: 'Privacy Policy' },
+        "SignOut": { icon: 'exit-to-app', value: 'Sign Out' },
+      }[item.key] || {}), {
+        onPress: () => {
+          this.setState({
+            active: item.key
+          });
+          this.props.navigation.navigate(item.key);
+        },
+        active: (this.state.active === item.key)
+      })
+    )
+  }
+
+  render() {
+    return (
+      <Drawer>
+        <DrawerNavHeader />
+        <Drawer.Section
+            items={this.props.items.map(item => this.mapNavItem(item)).filter(item => !!item.value)}
+        />
+      </Drawer>
+      );
+  }
 }
 
 const App = DrawerNavigator({
-  PrivacyPolicy: {
-    screen: props => <PrivacyPolicy rootNavigator={props.navigation} {...props.screenProps } />,
-    navigationOptions: {
-      drawerLabel: 'Privacy Policy',
-    },
-  },
   ForgotPassword: {
     screen: (props) => {
-      return <ForgotPassword {...props.screenProps} onCancel={() => props.navigation.navigate('PrivacyPolicy')} onSuccess={() => props.navigation.navigate('PrivacyPolicy')} />
+      return <ForgotPassword {...props.screenProps} onCancel={() => props.navigation.navigate('Home')} onSuccess={() => props.navigation.navigate('Home')} />
     }, navigationOptions: { drawerLabel: 'Change password' }
   },
   SignOut: {
@@ -99,7 +106,11 @@ const App = DrawerNavigator({
     }, navigationOptions: { drawerLabel: 'Sign Out' }
   },
   Splash: {
-    screen: props => <Splash navigation={props.navigation} { ...props.screenProps } />,
+    screen: props => {
+      return (
+        <Splash navigation={props.navigation} { ...props.screenProps } />
+      )
+    },
     navigationOptions: {
       drawerLabel: ' ',
     },
@@ -110,10 +121,18 @@ const App = DrawerNavigator({
       drawerLabel: ' ',
     },
   },
+  Home: {
+    screen: props => <PrivacyPolicy rootNavigator={props.navigation} screenProps={{ ...props.screenProps }} />,
+    navigationOptions: {
+      drawerLabel: 'Privacy Policy',
+    },
+  },
 }, { 
   initialRouteName: 'Splash',
-  contentComponent: customComponent
+  contentComponent: customComponent,
+  headerMode: 'none'
 });
+
 
 const AppContainer = props => (
   <Provider store={store}>
@@ -122,17 +141,5 @@ const AppContainer = props => (
     </ThemeProvider>
   </Provider>
 );
-
-// class App extends React.Component {
-//   render() {
-//     return (
-//       <Provider store={store}>
-//         <ThemeProvider uiTheme={uiTheme}>
-//           <MainTabNavigator ref={(nav) => { this.navigator = nav; }} />
-//         </ThemeProvider>
-//       </Provider>
-//     );
-//   }
-// }
 
 export default WithAuth(AppContainer);

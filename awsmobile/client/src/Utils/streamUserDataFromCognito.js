@@ -17,12 +17,13 @@ const cognitoParams = sub => ({
 });
 
 const fetchCognitoUser$ = sub => {
-  const cognitoidentityserviceprovider = new CognitoIdentityServiceProvider();
+  const cognitoidentityserviceprovider = new CognitoIdentityServiceProvider({region: 'us-east-1'});
   return (Observable.bindNodeCallback(
     cognitoidentityserviceprovider.listUsers.bind(cognitoidentityserviceprovider)
   )(cognitoParams(sub)))
     .pluck('Users')
     .map(users => users[0])
+    .catch(console.log)
 }
 
 export default fetchCognitoUser$;

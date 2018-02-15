@@ -13,8 +13,11 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { NavigationActions } from 'react-navigation';
+import { connect } from 'react-redux';
 
 import Constants from '../Utils/constants';
+
+import signInUser from '../actions/signInUser';
 
 const styles = StyleSheet.create({
   splash: {
@@ -23,6 +26,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+});
+
+const mapStateToProps = (state, ownProps) => ({
+  currentUser: state.users.current,
 });
 
 class Splash extends React.Component {
@@ -56,10 +63,19 @@ class Splash extends React.Component {
 
     const loggedIn = session && session.isValid();
 
-    this.setState({ isLoading: false });
+    if(loggedIn) {
+      this.props.signInUser(session);
+    } else {
+      this.setState({ isLoading: false });
 
-    this._navigateTo(loggedIn ? 'PrivacyPolicy' : 'FirstScreen');
+      this._navigateTo(loggedIn ? 'Home' : 'FirstScreen');
+    }
+  }
 
+  componentWillReceiveProps(newProps) {
+    if(newProps.currentUser) {
+      this._navigateTo('Home');
+    }
   }
 
   _navigateTo(routeName) {
@@ -74,4 +90,7 @@ class Splash extends React.Component {
 
 }
 
-export default Splash;
+export default connect(
+  mapStateToProps,
+  {signInUser}
+)(Splash);

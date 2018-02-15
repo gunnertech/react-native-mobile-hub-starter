@@ -11,5 +11,5 @@
  * and limitations under the License.
  */
 export default {
-  APP_NAME: 'Gunner Technology Starter',
+  APP_NAME: 'Gunner Sample',
 };

@@ -46,24 +46,26 @@ export default class MFAPrompt extends React.Component {
     this.props.onCancel();
   }
 
-  async handleValidateMFACode(code) {
-    try {
-      const validate = await this.props.onValidate(code);
-      const validCode = validate === true;
-      const promptTitle = validCode ?
-        'Enter code' :
-        `${validate} Enter code again`;
+  handleValidateMFACode(code) {
+    console.log("From the component!")
+    this.props.onValidate(code);
+    // try {
+    //   const validate = await this.props.onValidate(code);
+    //   const validCode = validate === true;
+    //   const promptTitle = validCode ?
+    //     'Enter code' :
+    //     `${validate} Enter code again`;
 
-      this.setState({
-        promptTitle
-      }, () => {
-        if (validCode) {
-          this.props.onSuccess();
-        }
-      });
-    } catch (err) {
-      this.setState({ promptTitle: `${err.message} Enter code again` });
-    }
+    //   this.setState({
+    //     promptTitle
+    //   }, () => {
+    //     if (validCode) {
+    //       this.props.onSuccess();
+    //     }
+    //   });
+    // } catch (err) {
+    //   this.setState({ promptTitle: `${err.message} Enter code again` });
+    // }
 
   }
 

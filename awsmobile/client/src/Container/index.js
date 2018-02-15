@@ -10,7 +10,7 @@ const propTypes = {
 class Container extends PureComponent {
     render() {
         return (
-            <View style={{ flex: 1 }}>
+            <View style={{ flex: 1, backgroundColor: this.props.backgroundColor }}>
                 {this.props.children}
             </View>
         );

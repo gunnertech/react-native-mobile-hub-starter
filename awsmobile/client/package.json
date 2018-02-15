@@ -13,8 +13,7 @@
         "build-api": "node ./buildApi.js"
     },
     "dependencies": {
-        "aws-amplify": "^0.2.0",
-        "aws-amplify-react-native": "^0.1.22",
+        "aws-amplify-react-native": "^0.2.0",
         "aws-sdk": "2.177.0",
         "buffer": "^5.0.7",
         "mime-type": "^3.0.5",

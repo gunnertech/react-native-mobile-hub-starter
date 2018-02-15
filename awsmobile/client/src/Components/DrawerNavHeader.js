@@ -15,7 +15,7 @@ class DrawerNavHeader extends React.Component {
     return(
       <Drawer.Header >
       {
-        this.props.currentUser.Username ? (
+        this.props.currentUser && this.props.currentUser.Username ? (
           <Drawer.Header.Account
               avatar={<Avatar text={(this.props.currentUser.Username || "").toUpperCase().substring(0,2)} />}
               footer={{

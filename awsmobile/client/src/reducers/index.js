@@ -3,6 +3,7 @@ import { combineReducers } from 'redux';
 
 
 import { app } from './app';
+import { session } from './session';
 import { users } from './users';
 
 
@@ -11,5 +12,6 @@ import { users } from './users';
 
 export default combineReducers({
     app,
+    session,
     users
 });

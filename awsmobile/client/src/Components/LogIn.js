@@ -1,165 +1,107 @@
-/*
- * Copyright 2017-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with
- * the License. A copy of the License is located at
- *
- *     http://aws.amazon.com/apache2.0/
- *
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
- * and limitations under the License.
- */
 import React from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import {
   View,
   StyleSheet,
   Text,
-  Image,
+  ScrollView,
   ActivityIndicator,
   Modal,
-  Dimensions,
+  Dimensions
 } from 'react-native';
 import {
   FormLabel,
   FormInput,
   FormValidationMessage,
-  Button,
 } from 'react-native-elements';
 import { StackNavigator } from 'react-navigation';
+
+import {
+  Toolbar,
+  Button,
+} from 'react-native-material-ui';
 
 import MFAPrompt from '../../lib/Categories/Auth/Components/MFAPrompt';
 import ForgotPassword from './ForgotPassword';
 import { colors } from 'theme';
 import Constants from '../Utils/constants';
+import Container from '../Container';
+
+import attemptSignIn from '../actions/attemptSignIn';
+import fetchSession from '../actions/fetchSession';
+import confirmSignIn from '../actions/confirmSignIn';
+
+
 
 const { width } = Dimensions.get('window');
 
-const styles = StyleSheet.create({
-  bla: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: 'white',
-  },
-  activityIndicator: {
-    backgroundColor: colors.mask,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-  },
-  formContainer: {
-    height: 250,
-    justifyContent: 'space-around',
-    paddingHorizontal: 5,
-  },
-  input: {
-    fontFamily: 'lato',
-  },
-  validationText: {
-    fontFamily: 'lato',
-  },
-  puppy: {
-    width: width / 2,
-    height: width / 2,
-  },
-  imageContainer: {
-    alignItems: 'center',
-  },
-  passwordResetButton: {
-    color: colors.primary,
-    marginTop: 10,
-    textAlign: 'center',
-  },
+const mapStateToProps = (state, ownProps) => ({
+  showActivityIndicator: state.app.working,
+  mfaRequired: state.app.requiresMfaOnSignIn,
+  session: state.session.session,
+  cognitoUser: state.session.cognitoUser,
+  error: state.app.error
 });
 
 class LogIn extends React.Component {
-  constructor(props) {
-    super(props);
+  static navigationOptions = navigationProps => ({
+    header: <Toolbar
+      centerElement={Constants.APP_NAME}
+      rightElement={<Button 
+        text="Sign In" 
+        style={{text: {color: 'white'}}}
+        onPress={() => navigationProps.navigation.state.params.handleSignIn() }
+      />}
+    />
+  })
 
-    ///TODO: Read this from config
-    this.mfaRequired = false;
+  constructor(props, context) {
+    super(props, context);
+
+    hackyStyleMerge(context.uiTheme);
 
     this.state = {
-      showActivityIndicator: false,
       username: '',
       password: '',
       showMFAPrompt: false,
-      errorMessage: '',
-      cognitoUser: '',
     };
-
-    this.baseState = this.state;
 
     this.handleLogInClick = this.handleLogInClick.bind(this);
     this.handleMFAValidate = this.handleMFAValidate.bind(this);
     this.handleMFACancel = this.handleMFACancel.bind(this);
     this.handleMFASuccess = this.handleMFASuccess.bind(this);
-    this.doLogin = this.doLogin.bind(this);
-    this.onLogIn = this.onLogIn.bind(this);
   }
 
-  async onLogIn(session) {
-    this.setState(this.baseState);
-
-    this.props.onLogIn(session);
+  componentWillMount() {
+    this.props.navigation.setParams({handleSignIn: this.handleLogInClick.bind(this)});
   }
 
-
-  async doLogin() {
-    const { auth } = this.props;
-    const { username, password } = this.state;
-    let errorMessage = '';
-    let showMFAPrompt = false;
-    let session = null;
-
-    try {
-      session = await auth.signIn(username, password)
-        .then((data) => {
-            this.setState({ cognitoUser: data }),
-            showMFAPrompt = this.mfaRequired;
-        });
-
-      if(!this.mfaRequired) {
-        session = await auth.currentSession();
+  componentWillReceiveProps(nextProps) {
+    if(!this.props.cognitoUser && nextProps.cognitoUser) {
+      if(!this.props.mfaRequired) {
+        this.props.fetchSession(this.props.screenProps.auth)
       }
-    } catch (exception) {
-      console.log(exception);
-      errorMessage = exception.invalidCredentialsMessage || exception.message || exception;
     }
 
-    this.setState({
-      showMFAPrompt,
-      errorMessage,
-      session,
-      showActivityIndicator: false,
-    }, () => {
-      if (session) {
-        this.onLogIn(session);
-      }
-    });
+    if(!this.props.session && nextProps.session) {
+      this.props.screenProps.onLogIn(nextProps.session)
+    }
   }
 
   handleLogInClick() {
-    this.setState({ showActivityIndicator: true });
-
-    setTimeout(this.doLogin, 0);
+    const { auth } = this.props.screenProps;
+    const { username, password } = this.state;
+    
+    ////BUG: In the simulator, if you don't call this twice, it pauses execution until you click the screen again.
+    //// If you're thinking, that's stupid, you're right and it made me want to kill myself.
+    this.props.attemptSignIn(auth, username, password);
+    this.props.attemptSignIn(auth, username, password);
   }
 
-  async handleMFAValidate(code = '') {
-    const { auth } = this.props;
-
-    try {
-      let session = null;
-      await auth.confirmSignIn(this.state.cognitoUser, code)
-        .then(async () => {
-          session = await auth.currentSession();
-          this.setState({ session });
-        });
-    } catch (exception) {
-      return exception.message;
-    }
-
-    return true;
+  handleMFAValidate(code = '') {
+    const { auth } = this.props.screenProps;
+    this.props.confirmSignIn(auth, this.props.cognitoUser, code);
   }
 
   handleMFACancel() {
@@ -167,16 +109,12 @@ class LogIn extends React.Component {
   }
 
   handleMFASuccess() {
-    this.setState({
-      showMFAPrompt: false,
-    }, () => {
-      this.onLogIn(this.state.session);
-    });
+    this.setState({ showMFAPrompt: false });
   }
 
   render() {
     return (
-      <View style={styles.bla}>
+      <Container backgroundColor="white">
         {this.state.showMFAPrompt &&
           <MFAPrompt
             onValidate={this.handleMFAValidate}
@@ -184,7 +122,7 @@ class LogIn extends React.Component {
             onSuccess={this.handleMFASuccess}
           />}
         <Modal
-          visible={this.state.showActivityIndicator}
+          visible={this.props.showActivityIndicator}
           onRequestClose={() => null}
         >
           <ActivityIndicator
@@ -192,15 +130,8 @@ class LogIn extends React.Component {
             size="large"
           />
         </Modal>
-        <View style={styles.imageContainer}>
-          <Image
-            resizeMode='contain'
-            source={require('../../assets/images/puppy.png')}
-            style={styles.puppy}
-          />
-        </View>
-        <View style={styles.formContainer}>
-          <FormValidationMessage labelStyle={styles.validationText}>{this.state.errorMessage}</FormValidationMessage>
+        <ScrollView>
+          <FormValidationMessage labelStyle={styles.validationText}>{this.props.error ? this.props.error.message : ''}</FormValidationMessage>
           <FormLabel>Username</FormLabel>
           <FormInput
             inputStyle={styles.input}
@@ -229,45 +160,63 @@ class LogIn extends React.Component {
             textInputRef="passwordInput"
             onChangeText={(password) => this.setState({ password })}
             value={this.state.password} />
-          <Button
-            fontFamily='lato'
-            containerViewStyle={{ marginTop: 20 }}
-            backgroundColor={colors.primary}
-            large
-            title="SIGN IN"
-            onPress={this.handleLogInClick} />
+
           <Text
             onPress={() => this.props.navigation.navigate('ForgotPassword')}
             style={styles.passwordResetButton}
           >Forgot your password?</Text>
-        </View>
-      </View>
+        </ScrollView>
+      </Container>
     );
   }
 
 }
 
+LogIn.contextTypes = {
+  uiTheme: PropTypes.object
+};
+
+ForgotPassword.contextTypes = {
+  uiTheme: PropTypes.object
+};
+
 const LogInStack = (StackNavigator({
   LogIn: {
-    screen: (props) => {
-      const { screenProps, ...otherProps } = props;
-
-      return <LogIn {...screenProps} {...otherProps} />;
-    },
-    navigationOptions: {
-      title: Constants.APP_NAME,
-    },
+    screen: connect(
+      mapStateToProps,
+      {attemptSignIn, fetchSession, confirmSignIn}
+    )(LogIn)
   },
   ForgotPassword: {
-    screen: (props) => {
-      const { screenProps, ...otherProps } = props;
-
-      return <ForgotPassword {...screenProps} {...otherProps} onCancel={() => otherProps.navigation.goBack()} onSuccess={() => otherProps.navigation.goBack()} />;
-    },
-    navigationOptions: {
-      title: Constants.APP_NAME,
-    },
+    screen: ForgotPassword
   },
-}, { mode: 'modal' }));
+}, { 
+  
+ }));
+
+
+
+var styles = StyleSheet.create({});
+
+const hackyStyleMerge = (theme) => {
+  styles = StyleSheet.create({
+    activityIndicator: {
+      backgroundColor: colors.mask,
+      justifyContent: 'center',
+      alignItems: 'center',
+      flex: 1,
+    },
+    input: {
+      color: theme.palette.accentColor
+    },
+    passwordResetButton: {
+      color: theme.palette.primaryColor,
+      marginTop: 10,
+      textAlign: 'center',
+    },
+  });
+
+  return true;
+}
 
 export default props => <LogInStack screenProps={{ ...props }} />;

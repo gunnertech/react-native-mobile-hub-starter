@@ -1,5 +1,5 @@
 import * as types from '../constants/types';
-import { API } from 'aws-amplify-react-native';
+import { API } from 'aws-amplify';
 import { NavigationActions } from 'react-navigation';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
