@@ -11,7 +11,5 @@
  * and limitations under the License.
  */
 import { AppRegistry } from 'react-native';
-// import Routers from './Routers';
 import App from './App';
-AppRegistry.registerComponent('awsmobilereactnativesample', () => App);
-// AppRegistry.registerComponent('awsmobilereactnativesample', () => Routers);
+AppRegistry.registerComponent('gunnerreactnativestarter', () => App);

@@ -12,7 +12,7 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import Prompt from 'react-native-prompt';
+import Prompt from 'rn-prompt';
 import { Keyboard } from 'react-native';
 
 export default class MFAPrompt extends React.Component {

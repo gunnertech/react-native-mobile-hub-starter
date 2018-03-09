@@ -5,9 +5,9 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Shudi would like to access your camera so you can create Shudis</string>
 	<key>LSApplicationCategoryType</key>
-	<string></string>
+	<string/>
 	<key>CFBundleGetInfoString</key>
-	<string></string>
+	<string/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Shudi would like to access your photos so you can create Shudis</string>
 	<key>CFBundleDevelopmentRegion</key>
@@ -47,7 +47,7 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
@@ -97,6 +97,7 @@
 		<string>Roboto-Regular.ttf</string>
 		<string>Roboto-Thin.ttf</string>
 		<string>Roboto-ThinItalic.ttf</string>
+		<string>Feather.ttf</string>
 	</array>
 </dict>
 </plist>
