@@ -1,0 +1,35 @@
+{
+    "name": "emailcapture-api",
+    "version": "1.0.0",
+    "description": "",
+    "main": "handler.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "babel-runtime": "^6.26.0",
+        "mailchimp-api-v3": "^1.8.0",
+        "selenium-webdriver": "3.6.0",
+        "shopify-api-node": "^2.11.0"
+    },
+    "devDependencies": {
+        "babel-core": "^6.25.0",
+        "babel-loader": "^7.1.1",
+        "babel-minify-webpack-plugin": "^0.3.0",
+        "babel-plugin-transform-runtime": "^6.23.0",
+        "babel-polyfill": "^6.23.0",
+        "babel-preset-env": "7.0.0-beta.3",
+        "babel-preset-stage-3": "^6.24.1",
+        "serverless": "^1.18.0",
+        "serverless-domain-manager": "^2.3.1",
+        "serverless-dynamodb-local": "^0.2.27",
+        "serverless-offline": "^3.15.1",
+        "serverless-plugin-warmup": "^3.4.0-rc.1",
+        "serverless-plugin-webpack": "^1.5.1",
+        "serverless-webpack": "^4.3.0",
+        "webpack": "^3.3.0",
+        "webpack-node-externals": "^1.6.0"
+    }
+}
